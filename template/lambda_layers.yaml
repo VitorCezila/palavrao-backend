@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Nested Stack that defines the Lambda Layers.
+
+Resources:
+  PalavraoMainLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: ../src/lambda/layers/main
+      LayerName: "palavraoApi-MainLayer"
+      CompatibleRuntimes:
+        - python3.13
+    Metadata:
+      BuildMethod: python3.13
+      BuildArchitecture: x86_64
+
+Outputs:
+  MainLayerARN:
+    Description: "Main layer ARN"
+    Value: !Ref PalavraoMainLayer

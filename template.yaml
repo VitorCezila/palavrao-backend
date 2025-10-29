@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Main application with Lambda, Layer and API.
+
+Globals:
+  Function:
+    Timeout: 15
+    Runtime: python3.13
+    Architectures:
+      - x86_64
+    Handler: app.lambda_handler
+    Layers:
+      - !GetAtt LambdaLayers.Outputs.MainLayerARN
+
+Resources:
+  LambdaLayers:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: ./template/lambda_layers.yaml 
+
+  # -------------------- FUNCTIONS --------------------
+
+  HelloWorldGetFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/functions/api/hello_world/
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
