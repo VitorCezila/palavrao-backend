@@ -1,0 +1,2 @@
+aws_lambda_powertools==2.30.2
+jsonschema==4.21.1
