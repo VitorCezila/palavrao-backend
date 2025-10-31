@@ -11,7 +11,7 @@ TASK_ROOT = os.environ.get('LAMBDA_TASK_ROOT', '.')
 WORD_FILE_PATH = os.path.join(TASK_ROOT, 'ptbr_5.txt')
 
 
-def _get_word_logic():
+def _get_word_logic(event, context):
     word_repository = FileWordRepository(full_file_path=WORD_FILE_PATH)
     word_service: IWordService = WordServiceImplementation(word_repository=word_repository)
 
@@ -24,4 +24,4 @@ def _get_word_logic():
 
 
 def lambda_handler(event, context):
-    return req.error_handler(func=_get_word_logic(), event=event, context=context, )
+    return req.error_handler(func=_get_word_logic, event=event, context=context)

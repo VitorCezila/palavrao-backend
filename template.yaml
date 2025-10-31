@@ -2,6 +2,12 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Main application with Lambda, Layer and API.
 
+Parameters:
+  Environment:
+    Type: String
+    Description: Deploy environment (dev or prod).
+    Default: dev
+
 Globals:
   Function:
     Timeout: 15
@@ -16,17 +22,29 @@ Resources:
   LambdaLayers:
     Type: AWS::Serverless::Application
     Properties:
-      Location: ./template/lambda_layers.yaml 
+      Location: ./template/lambda_layers.yaml
+      Parameters:
+        Environment: !Ref Environment
+
+  PalavraoApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub 'palavraoApi-${Environment}'
+      StageName: !Ref Environment
+      Auth:
+        ApiKeyRequired: true
 
   # -------------------- FUNCTIONS --------------------
 
-  HelloWorldGetFunction:
+  GetDailyWord:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/functions/api/hello_world/
+      CodeUri: src/lambda/functions/api/get_daily_word/
+      FunctionName: !Sub 'GetDailyWord-${Environment}'
       Events:
-        HelloWorld:
+        GetDailyWord:
           Type: Api
           Properties:
-            Path: /hello
+            Path: /daily-word
             Method: get
+            RestApiId: !Ref PalavraoApi
