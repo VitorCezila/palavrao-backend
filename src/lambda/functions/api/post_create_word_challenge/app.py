@@ -9,7 +9,8 @@ def _post_word_challenge(event, context):
     request_context_provider = AwsLambdaRequestContext(event, context)
     challenge_service = ChallengeServiceImplementation(challenge_dao=challenge_dao,
                                                        request_context=request_context_provider)
-    return challenge_service.create_challenge()
+    challenge = challenge_service.create_challenge()
+    return req.success(challenge)
 
 
 def lambda_handler(event, context):
