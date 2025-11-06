@@ -78,7 +78,6 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: cron(0 3 * * ? *)
-            Schedule-Timezone: America/Sao_Paulo
       Policies:
         - Statement:
             Effect: Allow

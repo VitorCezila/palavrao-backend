@@ -38,8 +38,10 @@ class DaoProcessor:
 
     def get_item(self, item_key):
         try:
+            logger.debug(f'DynamoDB GetItem Data: key: {item_key}, converter: {self.converter.__class__.__name__}')
+
             response = self.table.get_item(
-                item_key
+                Key=item_key
             )
             item = response.get('Item')
             logger.info(
@@ -49,3 +51,8 @@ class DaoProcessor:
         except Exception as e:
             logger.exception(f"Error DynamoDB GET_ITEM: {e}")
             internal_server_error("Error getting from database.", ERROR_CODE_INTERNAL_ERROR)
+
+    @staticmethod
+    def __generate_key(item) -> str:
+        key = f'{item[PARTITION_KEY_NAME]}#{item[SORT_KEY_NAME]}'
+        return key
