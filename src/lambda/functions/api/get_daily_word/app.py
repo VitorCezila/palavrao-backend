@@ -3,7 +3,7 @@ from datetime import datetime
 
 import palavrao.requests.utils as req
 from palavrao.dto.word_response import WordResponse
-from palavrao.implementations.dao.dynamodb.daily_word import DailyWordDaoDynamoDB
+from palavrao.implementations.dao.dynamodb.daily_word_dao_impl import DailyWordDaoDynamoDB
 from palavrao.implementations.repository.file_word_repository import FileWordRepository
 from palavrao.implementations.service.word_service_implementation import WordServiceImplementation, TZ_BRASIL
 from palavrao.interfaces.service.word_service import IWordService
