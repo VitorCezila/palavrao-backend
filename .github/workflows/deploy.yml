@@ -41,8 +41,8 @@ jobs:
 
       - name: SAM Deploy to Dev
         if: github.ref == 'refs/heads/develop'
-        run: sam deploy --config-env dev --no-confirm
+        run: sam deploy --config-env dev --no-confirm-changeset
 
       - name: SAM Deploy to Prod
         if: github.ref == 'refs/heads/main'
-        run: sam deploy --config-env prod --no-confirm
+        run: sam deploy --config-env prod --no-confirm-changeset
