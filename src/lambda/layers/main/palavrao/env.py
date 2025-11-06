@@ -1,3 +1,4 @@
 import os
 
 REQUEST_TIMEOUT = os.getenv('REQUEST_TIMEOUT', 10)
+PALAVRAO_TABLE = os.getenv('PALAVRAO_TABLE')
