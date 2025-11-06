@@ -24,7 +24,7 @@ class DailyWordDaoDynamoDB(DailyWordDao):
         if not item:
             raise DailyWordNotFound(f"Word for date {date_str} not found.")
 
-        return item
+        return item.word
 
     def save_word(self, date_str: str, word: str):
         daily_word = DailyWord(date_str=date_str, word=word)
