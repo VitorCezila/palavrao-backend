@@ -2,7 +2,7 @@ from typing import List, Optional
 
 import palavrao.requests.utils as req
 from palavrao.implementations.logging import logger
-from palavrao.interfaces.word_repository import IWordRepository
+from palavrao.interfaces.repository.word_repository import IWordRepository
 
 _CACHED_WORDS: Optional[List[str]] = None
 
@@ -23,14 +23,16 @@ class FileWordRepository(IWordRepository):
                 words = [line.strip().upper() for line in f if line.strip()]
             if not words:
                 logger.error("The word file is empty.", file_path=self.file_path)
-                return req.not_found("Word not found")
+                req.not_found("Word not found")
             else:
                 logger.info(f"Success: {len(words)} words loaded.")
                 _CACHED_WORDS = words
             return _CACHED_WORDS
         except FileNotFoundError:
             logger.error(f"FATAL: Words file not found.", file_path=self.file_path)
-            return req.not_found("Word not found")
+            req.not_found("Word not found")
+        except req.PalavraoError as pe:
+            raise pe
         except Exception as e:
             logger.exception(f"Unexpected error: {e}")
-            return req.internal_server_error("Internal server error", req.ERROR_CODE_INTERNAL_ERROR)
+            req.internal_server_error("Internal server error", req.ERROR_CODE_INTERNAL_ERROR)
