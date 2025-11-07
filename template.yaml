@@ -110,7 +110,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/lambda/functions/api/get_challenge_by_code/
-      FunctionName: !Sub 'PostCreateWordChallenge-${Environment}'
+      FunctionName: !Sub 'GetChallengeByCode-${Environment}'
       Events:
         GetChallengeByCode:
           Type: Api
