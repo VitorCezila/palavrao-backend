@@ -21,7 +21,7 @@ class ChallengeServiceImplementation(IWordChallengeService):
 
     def get_word_challenge(self) -> WordChallenge:
         request_context = self.request_context.get_request_context()
-        challenge_code = request_context.path_parameters['code']
+        challenge_code = request_context.path_params['code']
         try:
             challenge = self.challenge_dao.get_challenge_by_code(challenge_code)
             return challenge
