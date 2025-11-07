@@ -5,10 +5,11 @@ from zoneinfo import ZoneInfo
 
 import palavrao.requests.utils as req
 from palavrao.implementations.logging import logger
-from palavrao.interfaces.dao.challenge_dao import ChallengeDao
+from palavrao.interfaces.dao.challenge_dao import ChallengeDao, ChallengeNotFound
 from palavrao.interfaces.request import IRequestContextProvider
 from palavrao.interfaces.service.challenge_service import IWordChallengeService
 from palavrao.model.word_challenge import WordChallenge
+from palavrao.requests.utils import ERROR_CODE_INTERNAL_ERROR
 
 TZ_BRASIL = ZoneInfo("America/Sao_Paulo")
 
@@ -21,8 +22,13 @@ class ChallengeServiceImplementation(IWordChallengeService):
     def get_word_challenge(self) -> WordChallenge:
         request_context = self.request_context.get_request_context()
         challenge_code = request_context.path_parameters['code']
-        challenge = self.challenge_dao.get_challenge_by_code(challenge_code)
-        return challenge
+        try:
+            challenge = self.challenge_dao.get_challenge_by_code(challenge_code)
+            return challenge
+        except ChallengeNotFound:
+            logger.info('Challenge not found')
+            req.not_found('Challenge not found')
+
 
     def create_challenge(self) -> WordChallenge:
         request_context = self.request_context.get_request_context()
@@ -39,9 +45,9 @@ class ChallengeServiceImplementation(IWordChallengeService):
             self.challenge_dao.save_challenge(challenge)
             logger.info(f"Challenge created with code: {challenge_code}")
             return challenge
-        except Exception as e:
+        except Exception:
             logger.error("Error creating challenge.")
-            raise e
+            req.internal_server_error('Unknown error', ERROR_CODE_INTERNAL_ERROR)
 
     def _generate_share_code(self, length: int = 6) -> str:
         alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
