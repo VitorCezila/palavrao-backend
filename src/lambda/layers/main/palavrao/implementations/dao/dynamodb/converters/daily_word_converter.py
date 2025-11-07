@@ -1,13 +1,11 @@
-from palavrao.interfaces.dao.object_converter import ObjectConverter
-
-from palavrao.interfaces.dao.object_converter import ObjectConverter
-from palavrao.model.daily_word import DailyWord
 from typing import Dict, Any
 
 from palavrao.implementations.dao.dynamodb.dao_processor import (
     PARTITION_KEY_NAME,
     SORT_KEY_NAME,
 )
+from palavrao.interfaces.dao.object_converter import ObjectConverter
+from palavrao.model.daily_word import DailyWord
 
 
 class DailyWordConverter(ObjectConverter):

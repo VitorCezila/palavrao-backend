@@ -1,7 +1,6 @@
 import secrets
 from dataclasses import dataclass, field
 from datetime import datetime
-from http.client import responses
 from zoneinfo import ZoneInfo
 
 import palavrao.requests.utils as req
