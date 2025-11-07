@@ -15,7 +15,6 @@ class AwsLambdaRequestContext(IRequestContextProvider):
     context: LambdaContext
 
     def get_request_context(self) -> RequestContext:
-        logger.debug(f'Event: {self.event}')
         return RequestContext(
             body=self.__get_body(),
             path_params=self.event.get('pathParameters'),
