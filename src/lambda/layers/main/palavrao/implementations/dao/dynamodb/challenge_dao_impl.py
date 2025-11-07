@@ -18,14 +18,14 @@ class ChallengeDaoDynamoDB(ChallengeDao):
         self.processor = DaoProcessor(converter=self.converter)
 
 
-    def get_challenge_by_code(self, challenge_code: str) -> str:
+    def get_challenge_by_code(self, challenge_code: str) -> WordChallenge:
         item_key = self.converter.generate_key(challenge_code)
         item = self.processor.get_item(item_key)
 
         if not item:
             raise ChallengeNotFound(f"Challenge {challenge_code} not found.")
 
-        return item.word
+        return item
 
     def save_challenge(self, word: WordChallenge):
         self.processor.put_item(word)
