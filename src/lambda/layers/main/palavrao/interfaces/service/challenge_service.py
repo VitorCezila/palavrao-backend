@@ -8,7 +8,7 @@ class IWordChallengeService(ABC):
     Try to found a challenge word by it code
     """
     @abstractmethod
-    def get_word_challenge(self, challenge_code: str) -> WordChallenge:
+    def get_word_challenge(self) -> WordChallenge:
         pass
 
     """

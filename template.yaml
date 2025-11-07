@@ -105,3 +105,23 @@ Resources:
               - dynamodb:GetItem
               - dynamodb:PutItem
             Resource: !GetAtt PalavraoTable.Arn
+
+  GetChallengeByCode:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/functions/api/get_challenge_by_code/
+      FunctionName: !Sub 'PostCreateWordChallenge-${Environment}'
+      Events:
+        GetChallengeByCode:
+          Type: Api
+          Properties:
+            Path: /word-challenge/{code}
+            Method: get
+            RestApiId: !Ref PalavraoApi
+      Policies:
+        - Statement:
+            Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+            Resource: !GetAtt PalavraoTable.Arn

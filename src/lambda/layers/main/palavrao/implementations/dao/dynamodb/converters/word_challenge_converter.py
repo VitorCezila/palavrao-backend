@@ -33,5 +33,5 @@ class WordChallengeConverter(ObjectConverter):
     def generate_key(self, challenge_code: str) -> dict :
         return {
             PARTITION_KEY_NAME: self.PREFIX,
-            SORT_KEY_NAME: challenge_code
+            SORT_KEY_NAME: challenge_code.upper()
         }
