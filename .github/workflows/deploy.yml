@@ -1,0 +1,48 @@
+name: Deploy Palavrao Backend
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ (github.ref == 'refs/heads/main' && 'prod') || (github.ref == 'refs/heads/develop' && 'dev') }}
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install AWS SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: SAM Build
+        run: sam build --use-container
+
+      - name: SAM Deploy to Dev
+        if: github.ref == 'refs/heads/develop'
+        run: sam deploy --config-env dev --no-confirm-changeset
+
+      - name: SAM Deploy to Prod
+        if: github.ref == 'refs/heads/main'
+        run: sam deploy --config-env prod --no-confirm-changeset

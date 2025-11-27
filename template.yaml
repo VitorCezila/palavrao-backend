@@ -2,10 +2,19 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Main application with Lambda, Layer and API.
 
+Parameters:
+  Environment:
+    Type: String
+    Description: Deploy environment (dev or prod).
+    Default: dev
+
 Globals:
   Function:
     Timeout: 15
     Runtime: python3.13
+    Environment:
+      Variables:
+        PALAVRAO_TABLE: !Ref PalavraoTable
     Architectures:
       - x86_64
     Handler: app.lambda_handler
@@ -16,17 +25,103 @@ Resources:
   LambdaLayers:
     Type: AWS::Serverless::Application
     Properties:
-      Location: ./template/lambda_layers.yaml 
+      Location: ./template/lambda_layers.yaml
+      Parameters:
+        Environment: !Ref Environment
+
+  PalavraoApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub 'palavraoApi-${Environment}'
+      StageName: !Ref Environment
+      Auth:
+        ApiKeyRequired: true
+
+# -------------------- DYNAMODB--------------------
+
+  PalavraoTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'palavrao-${Environment}'
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
 
   # -------------------- FUNCTIONS --------------------
 
-  HelloWorldGetFunction:
+  GetDailyWord:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/lambda/functions/api/hello_world/
+      CodeUri: src/lambda/functions/api/get_daily_word/
+      FunctionName: !Sub 'GetDailyWord-${Environment}'
       Events:
-        HelloWorld:
+        GetDailyWord:
           Type: Api
           Properties:
-            Path: /hello
+            Path: /daily-word
             Method: get
+            RestApiId: !Ref PalavraoApi
+        DailySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 3 * * ? *)
+      Policies:
+        - Statement:
+            Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+            Resource: !GetAtt PalavraoTable.Arn
+
+  PostCreateWordChallenge:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/functions/api/post_create_word_challenge/
+      FunctionName: !Sub 'PostCreateWordChallenge-${Environment}'
+      Events:
+        PostCreateWordChallenge:
+          Type: Api
+          Properties:
+            Path: /word-challenge
+            Method: post
+            RestApiId: !Ref PalavraoApi
+      Policies:
+        - Statement:
+            Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+            Resource: !GetAtt PalavraoTable.Arn
+
+  GetChallengeByCode:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/lambda/functions/api/get_challenge_by_code/
+      FunctionName: !Sub 'GetChallengeByCode-${Environment}'
+      Events:
+        GetChallengeByCode:
+          Type: Api
+          Properties:
+            Path: /word-challenge/{code}
+            Method: get
+            RestApiId: !Ref PalavraoApi
+      Policies:
+        - Statement:
+            Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+            Resource: !GetAtt PalavraoTable.Arn
