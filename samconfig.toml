@@ -45,3 +45,20 @@ region = "us-east-2"
 confirm_changeset = true
 allow_iam_role_creation = true
 disable_rollback = false
+
+[prod.deploy.parameters]
+stack_name = "palavrao-stack-prod"
+resolve_s3 = true
+s3_prefix = "palavrao-stack-prod"
+region = "us-east-2"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
+image_repositories = []
+parameter_overrides = "Environment=\"prod\""
+
+[prod.global.parameters]
+stack_name = "palavrao-stack-prod"
+region = "us-east-2"
+confirm_changeset = true
+allow_iam_role_creation = true
+disable_rollback = false
